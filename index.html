@@ -1,302 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="h-full">
 <head>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Production analytics dashboard" />
   <title>Production Analytics Dashboard</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="preconnect" href="https://unpkg.com" />
   <link
     rel="stylesheet"
-    href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"
+    href="https://cdn.datatables.net/1.13.8/css/dataTables.tailwindcss.min.css"
   />
   <link
     rel="stylesheet"
-    href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"
+    href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css"
   />
-  <style>
-    :root {
-      --light-blue: #76c7ff;
-      --dark-blue: #004a99;
-      --light-grey: #f0f2f5;
-      --white: #ffffff;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--light-grey);
-      color: #1a1a1a;
-    }
-
-    header {
-      background: var(--dark-blue);
-      color: var(--white);
-      padding: 24px;
-    }
-
-    header h1 {
-      margin: 0 0 8px;
-      font-size: 26px;
-    }
-
-    header p {
-      margin: 0;
-      opacity: 0.9;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    .card {
-      background: var(--white);
-      border-radius: 10px;
-      padding: 16px;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
-    }
-
-    .grid {
-      display: grid;
-      gap: 16px;
-    }
-
-    .grid-2 {
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    }
-
-    .grid-4 {
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-
-    .filters {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      align-items: end;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    select,
-    input[type="number"],
-    input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #cbd0d6;
-      background: var(--white);
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-top: 8px;
-    }
-
-    .kpi {
-      border-left: 5px solid var(--light-blue);
-    }
-
-    .kpi h3 {
-      margin: 0 0 4px;
-      font-size: 14px;
-      color: #4d4d4d;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .kpi p {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--dark-blue);
-    }
-
-    .chart-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    canvas {
-      width: 100% !important;
-      height: 320px !important;
-    }
-
-    .table-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .btn {
-      border: none;
-      padding: 8px 14px;
-      background: var(--dark-blue);
-      color: var(--white);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .btn.secondary {
-      background: var(--light-blue);
-      color: #083457;
-    }
-
-    .footer-note {
-      font-size: 12px;
-      color: #6e7177;
-      margin-top: 8px;
-    }
-
-    table.dataTable tfoot th {
-      padding: 6px 8px;
-    }
-
-    table.dataTable tfoot input {
-      width: 100%;
-      padding: 4px 6px;
-      border: 1px solid #cbd0d6;
-      border-radius: 4px;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "media"
+    };
+  </script>
 </head>
-<body>
-  
-  <header>
-    <div class="container">
-      <h1>Production Analytics Dashboard</h1>
-      <p>Explore cycle time, labor, and FTE data with quick filters and scenario inputs.</p>
-    </div>
+<body class="min-h-full bg-[#f0f2f5] text-slate-900 dark:bg-slate-900 dark:text-slate-100">
+  <header class="bg-white dark:bg-slate-900">
+    <nav class="max-w-screen-2xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div>
+        <h1 class="text-xl font-semibold text-[#004a99] dark:text-[#76c7ff]">Production Analytics Dashboard</h1>
+        <p class="text-sm text-slate-500 dark:text-slate-300">Explore cycle time, labor, and FTE data with quick filters and scenario inputs.</p>
+      </div>
+    </nav>
+    <div class="h-[3px] bg-gradient-to-r from-[#004a99] to-[#76c7ff]"></div>
   </header>
 
-  <main class="container grid" aria-live="polite">
-    <section class="card">
-      <div class="grid grid-2">
+  <main class="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
+    <section class="rounded-2xl bg-white p-6 shadow-lg dark:bg-slate-800" aria-labelledby="scenario-title">
+      <div class="grid gap-6 lg:grid-cols-2">
         <div>
-          <h2>Scenario Inputs</h2>
-          <div class="grid grid-2" style="margin-top: 12px;">
-            <div>
-              <label for="unitsInput">How many units to build?</label>
-              <input id="unitsInput" type="number" min="1" value="100" />
-            </div>
-            <div>
-              <label for="timeframeInput">Time frame (months)</label>
-              <input id="timeframeInput" type="number" min="1" value="12" />
-            </div>
+          <div class="flex items-center justify-between">
+            <h2 id="scenario-title" class="text-lg font-semibold text-slate-900 dark:text-white">Scenario Inputs</h2>
+            <button
+              id="addScenarioRow"
+              type="button"
+              class="inline-flex items-center rounded-lg border border-[#004a99] px-3 py-1.5 text-sm font-medium text-[#004a99] transition hover:bg-[#004a99]/10 dark:border-[#76c7ff] dark:text-[#76c7ff]"
+              aria-label="Add another machine group"
+            >
+              Add another machine group
+            </button>
+          </div>
+          <p class="mt-1 text-sm text-slate-500 dark:text-slate-300">Add multiple machine groups to model combined demand scenarios.</p>
+          <div id="scenarioRows" class="mt-4 space-y-4"></div>
+        </div>
+        <div>
+          <h2 class="text-lg font-semibold text-slate-900 dark:text-white">Upload CSV</h2>
+          <label for="csvFile" class="mt-3 block text-sm font-medium text-slate-700 dark:text-slate-200">Replace dataset</label>
+          <input
+            id="csvFile"
+            type="file"
+            accept=".csv"
+            class="mt-2 block w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-[#76c7ff] focus:outline-none focus:ring-2 focus:ring-[#76c7ff]/50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+          />
+          <p class="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            Expected columns: Department, MachineType, WorkCenter, TimeApplicable, DatasetName, Unit, Value, CriticalPath.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-2xl bg-white p-6 shadow-lg dark:bg-slate-800" aria-labelledby="filters-title">
+      <details class="group">
+        <summary class="flex cursor-pointer items-center justify-between text-lg font-semibold text-slate-900 dark:text-white" id="filters-title">
+          Filters
+          <span class="text-sm font-medium text-slate-500 transition group-open:rotate-180">▾</span>
+        </summary>
+        <div class="mt-4 grid gap-4 lg:grid-cols-4">
+          <div>
+            <label for="departmentFilter" class="text-sm font-medium text-slate-700 dark:text-slate-200">Department</label>
+            <select id="departmentFilter" multiple aria-label="Filter by department"></select>
+          </div>
+          <div>
+            <label for="machineFilter" class="text-sm font-medium text-slate-700 dark:text-slate-200">Machine Type</label>
+            <select id="machineFilter" multiple aria-label="Filter by machine type"></select>
+          </div>
+          <div>
+            <label for="datasetFilter" class="text-sm font-medium text-slate-700 dark:text-slate-200">Dataset Name</label>
+            <select id="datasetFilter" multiple aria-label="Filter by dataset name"></select>
+          </div>
+          <div class="flex items-center">
+            <label for="criticalFilter" class="flex items-center gap-3 text-sm font-medium text-slate-700 dark:text-slate-200">
+              Only Critical Path
+              <span class="relative inline-flex h-6 w-11 items-center">
+                <input id="criticalFilter" type="checkbox" class="peer sr-only" aria-label="Only critical path" />
+                <span class="h-6 w-11 rounded-full bg-slate-200 transition peer-checked:bg-[#004a99] dark:bg-slate-700"></span>
+                <span class="absolute left-1 h-4 w-4 rounded-full bg-white transition peer-checked:translate-x-5"></span>
+              </span>
+            </label>
           </div>
         </div>
-        <div>
-          <h2>Upload CSV</h2>
-          <label for="csvFile">Replace dataset</label>
-          <input id="csvFile" type="file" accept=".csv" />
-          <p class="footer-note">Expected columns: Department, MachineType, WorkCenter, TimeApplicable, DatasetName, Unit, Value, CriticalPath.</p>
+      </details>
+    </section>
+
+    <section class="grid gap-4 md:grid-cols-4" aria-label="Key performance indicators">
+      <div class="relative rounded-2xl border-l-4 border-[#76c7ff] bg-white p-5 shadow-lg dark:bg-slate-800">
+        <div class="absolute right-4 top-4 text-slate-400">
+          <i data-lucide="clock" class="h-5 w-5"></i>
+        </div>
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Average cycle time (seconds)</h3>
+        <p id="kpiCycle" class="mt-2 text-3xl font-semibold text-[#004a99]">0</p>
+      </div>
+      <div class="relative rounded-2xl border-l-4 border-[#76c7ff] bg-white p-5 shadow-lg dark:bg-slate-800">
+        <div class="absolute right-4 top-4 text-slate-400">
+          <i data-lucide="activity" class="h-5 w-5"></i>
+        </div>
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Total labor hours</h3>
+        <p id="kpiLabor" class="mt-2 text-3xl font-semibold text-[#004a99]">0</p>
+      </div>
+      <div class="relative rounded-2xl border-l-4 border-[#76c7ff] bg-white p-5 shadow-lg dark:bg-slate-800">
+        <div class="absolute right-4 top-4 text-slate-400">
+          <i data-lucide="users" class="h-5 w-5"></i>
+        </div>
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Computed total FTE</h3>
+        <p id="kpiFte" class="mt-2 text-3xl font-semibold text-[#004a99]">0</p>
+      </div>
+      <div class="relative rounded-2xl border-l-4 border-[#76c7ff] bg-white p-5 shadow-lg dark:bg-slate-800">
+        <div class="absolute right-4 top-4 text-slate-400">
+          <i data-lucide="hash" class="h-5 w-5"></i>
+        </div>
+        <h3 class="text-xs font-semibold uppercase tracking-wide text-slate-500">Row count</h3>
+        <p id="kpiRows" class="mt-2 text-3xl font-semibold text-[#004a99]">0</p>
+      </div>
+    </section>
+
+    <div id="kpiAnnouncer" class="sr-only" aria-live="polite"></div>
+
+    <section class="grid gap-4 lg:grid-cols-3" aria-label="Charts">
+      <div class="rounded-2xl bg-white p-5 shadow-lg dark:bg-slate-800">
+        <h2 class="text-base font-semibold">Average cycle time per Machine Type</h2>
+        <div class="mt-4 h-72">
+          <canvas id="cycleByMachine" class="h-full w-full"></canvas>
+        </div>
+      </div>
+      <div class="rounded-2xl bg-white p-5 shadow-lg dark:bg-slate-800">
+        <h2 class="text-base font-semibold">Labor hours vs FTE per Machine Type</h2>
+        <div class="mt-4 h-72">
+          <canvas id="laborFteByMachine" class="h-full w-full"></canvas>
+        </div>
+      </div>
+      <div class="rounded-2xl bg-white p-5 shadow-lg dark:bg-slate-800">
+        <h2 class="text-base font-semibold">Average cycle time over Time Applicable</h2>
+        <div class="mt-4 h-72">
+          <canvas id="cycleOverTime" class="h-full w-full"></canvas>
         </div>
       </div>
     </section>
 
-    <section class="card">
-      <h2>Filters</h2>
-      <div class="filters" style="margin-top: 12px;">
-        <div>
-          <label for="departmentFilter">Department</label>
-          <select id="departmentFilter" multiple></select>
-        </div>
-        <div>
-          <label for="machineFilter">Machine Type</label>
-          <select id="machineFilter" multiple></select>
-        </div>
-        <div>
-          <label for="datasetFilter">Dataset Name</label>
-          <select id="datasetFilter" multiple></select>
-        </div>
-        <div class="checkbox-group">
-          <input id="criticalFilter" type="checkbox" />
-          <label for="criticalFilter">Only Critical Path</label>
-        </div>
+    <section class="rounded-2xl bg-white p-6 shadow-lg dark:bg-slate-800" aria-labelledby="table-title">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="table-title" class="text-lg font-semibold">Filtered Data</h2>
+        <button
+          class="rounded-lg bg-[#004a99] px-4 py-2 text-sm font-medium text-white shadow transition hover:bg-[#003870]"
+          id="downloadCsv"
+          type="button"
+        >
+          Download CSV
+        </button>
       </div>
-    </section>
-
-    <section class="grid grid-4">
-      <div class="card kpi">
-        <h3>Average cycle time (seconds)</h3>
-        <p id="kpiCycle">0</p>
+      <div class="mt-4 overflow-auto rounded-xl border border-slate-100 dark:border-slate-700">
+        <table id="dataTable" class="display stripe hover w-full whitespace-nowrap text-sm">
+          <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+            <tr id="tableHead"></tr>
+          </thead>
+          <tfoot class="bg-slate-50 text-left text-xs uppercase text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+            <tr id="tableFoot"></tr>
+          </tfoot>
+          <tbody></tbody>
+        </table>
       </div>
-      <div class="card kpi">
-        <h3>Total labor hours</h3>
-        <p id="kpiLabor">0</p>
-      </div>
-      <div class="card kpi">
-        <h3>Computed total FTE</h3>
-        <p id="kpiFte">0</p>
-      </div>
-      <div class="card kpi">
-        <h3>Row count</h3>
-        <p id="kpiRows">0</p>
-      </div>
-    </section>
-
-    <section class="chart-grid">
-      <div class="card">
-        <h2>Average cycle time per Machine Type</h2>
-        <canvas id="cycleByMachine"></canvas>
-      </div>
-      <div class="card">
-        <h2>Labor hours vs FTE per Machine Type</h2>
-        <canvas id="laborFteByMachine"></canvas>
-      </div>
-      <div class="card">
-        <h2>Average cycle time over Time Applicable</h2>
-        <canvas id="cycleOverTime"></canvas>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="table-actions">
-        <h2>Filtered Data</h2>
-        <div>
-          <button class="btn" id="downloadCsv">Download CSV</button>
-        </div>
-      </div>
-      <table id="dataTable" class="display" style="width:100%">
-        <thead>
-          <tr id="tableHead"></tr>
-        </thead>
-        <tfoot>
-          <tr id="tableFoot"></tr>
-        </tfoot>
-        <tbody></tbody>
-      </table>
     </section>
   </main>
+
+  <footer class="max-w-screen-2xl mx-auto px-4 pb-6 text-xs text-slate-400">
+    Updated analytics view with accessible filters and scenario planning tools.
+  </footer>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-  <script>
+  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.tailwindcss.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script type="module">
     const palette = {
       lightBlue: "#76c7ff",
       darkBlue: "#004a99",
-      lightGrey: "#f0f2f5"
+      lightGrey: "#f0f2f5",
+      lightBlueFill: "rgba(118,199,255,0.7)",
+      lightBlueFillSoft: "rgba(118,199,255,0.3)"
     };
 
     const baselineUnits = 100;
@@ -323,7 +223,8 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       rawData: [],
       filteredData: [],
       dataTable: null,
-      charts: {}
+      charts: {},
+      tomSelects: {}
     };
 
     const elements = {
@@ -331,16 +232,17 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       machineFilter: document.getElementById("machineFilter"),
       datasetFilter: document.getElementById("datasetFilter"),
       criticalFilter: document.getElementById("criticalFilter"),
-      unitsInput: document.getElementById("unitsInput"),
-      timeframeInput: document.getElementById("timeframeInput"),
       csvFile: document.getElementById("csvFile"),
+      downloadCsv: document.getElementById("downloadCsv"),
+      tableHead: document.getElementById("tableHead"),
+      tableFoot: document.getElementById("tableFoot"),
       kpiCycle: document.getElementById("kpiCycle"),
       kpiLabor: document.getElementById("kpiLabor"),
       kpiFte: document.getElementById("kpiFte"),
       kpiRows: document.getElementById("kpiRows"),
-      downloadCsv: document.getElementById("downloadCsv"),
-      tableHead: document.getElementById("tableHead"),
-      tableFoot: document.getElementById("tableFoot")
+      kpiAnnouncer: document.getElementById("kpiAnnouncer"),
+      scenarioRows: document.getElementById("scenarioRows"),
+      addScenarioRow: document.getElementById("addScenarioRow")
     };
 
     const csvColumns = [
@@ -356,8 +258,8 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       "Shift"
     ];
 
-    const parseCsvAsync = (csvText) => {
-      return new Promise((resolve, reject) => {
+    const parseCsvAsync = (csvText) =>
+      new Promise((resolve, reject) => {
         Papa.parse(csvText, {
           header: true,
           skipEmptyLines: true,
@@ -367,7 +269,6 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
           error: (error) => reject(error)
         });
       });
-    };
 
     const normalizeRow = (row) => ({
       ...row,
@@ -375,37 +276,56 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       CriticalPath: row.CriticalPath?.trim() || "No"
     });
 
-    const uniqueValues = (data, key) => {
-      return Array.from(new Set(data.map((row) => row[key]).filter(Boolean))).sort();
+    const uniqueValues = (data, key) =>
+      Array.from(new Set(data.map((row) => row[key]).filter(Boolean))).sort();
+
+    const updateTomSelectOptions = (selectInstance, values) => {
+      selectInstance.clearOptions();
+      selectInstance.addOptions(values.map((value) => ({ value, text: value })));
+      selectInstance.setValue(values, true);
+      selectInstance.refreshOptions(false);
     };
 
-    const selectedValues = (selectElement) => {
-      return Array.from(selectElement.selectedOptions).map((option) => option.value);
+    const matchesFilter = (row, filterValues, key) =>
+      !filterValues.length || filterValues.includes(row[key]);
+
+    const getScenarioTotals = () => {
+      const rows = Array.from(elements.scenarioRows.querySelectorAll(".scenario-row"));
+      return rows.reduce(
+        (totals, row) => {
+          const units = Number(row.querySelector(".scenario-units").value) || 0;
+          const months = Number(row.querySelector(".scenario-months").value) || 0;
+          return {
+            units: totals.units + units,
+            months: totals.months + months
+          };
+        },
+        { units: 0, months: 0 }
+      );
     };
 
-    const updateSelectOptions = (selectElement, values) => {
-      selectElement.innerHTML = "";
-      values.forEach((value) => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = value;
-        option.selected = true;
-        selectElement.appendChild(option);
+    const calculateAverage = (values) =>
+      values.length ? values.reduce((total, value) => total + value, 0) / values.length : 0;
+
+    const formatNumber = (value, decimals = 1) =>
+      Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
       });
+
+    const loadData = async (data) => {
+      state.rawData = data.map(normalizeRow);
+      updateTomSelectOptions(state.tomSelects.department, uniqueValues(state.rawData, "Department"));
+      updateTomSelectOptions(state.tomSelects.machine, uniqueValues(state.rawData, "MachineType"));
+      updateTomSelectOptions(state.tomSelects.dataset, uniqueValues(state.rawData, "DatasetName"));
+      await refreshDashboard();
     };
 
-    const matchesFilter = (row, filterValues, key) => {
-      if (!filterValues.length) {
-        return true;
-      }
-      return filterValues.includes(row[key]);
-    };
-
-    const filterData = async () => {
+    const applyFilters = async () => {
       await new Promise((resolve) => requestAnimationFrame(resolve));
-      const selectedDepartments = selectedValues(elements.departmentFilter);
-      const selectedMachines = selectedValues(elements.machineFilter);
-      const selectedDatasets = selectedValues(elements.datasetFilter);
+      const selectedDepartments = state.tomSelects.department.items;
+      const selectedMachines = state.tomSelects.machine.items;
+      const selectedDatasets = state.tomSelects.dataset.items;
       const onlyCritical = elements.criticalFilter.checked;
 
       state.filteredData = state.rawData.filter((row) => {
@@ -419,22 +339,7 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       });
     };
 
-    const calculateAverage = (values) => {
-      if (!values.length) {
-        return 0;
-      }
-      const sum = values.reduce((total, value) => total + value, 0);
-      return sum / values.length;
-    };
-
-    const formatNumber = (value, decimals = 1) => {
-      return Number(value).toLocaleString(undefined, {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
-      });
-    };
-
-    const updateKpis = () => {
+    const renderKPIs = () => {
       const cycleRows = state.filteredData.filter((row) => row.Unit === "Cycle Time");
       const laborRows = state.filteredData.filter((row) => row.Unit === "Labor Hours");
       const fteRows = state.filteredData.filter((row) => row.Unit === "FTE");
@@ -443,8 +348,9 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       const totalLabor = laborRows.reduce((total, row) => total + row.Value, 0);
       const totalFteBase = fteRows.reduce((total, row) => total + row.Value, 0);
 
-      const units = Number(elements.unitsInput.value) || baselineUnits;
-      const months = Number(elements.timeframeInput.value) || baselineMonths;
+      const scenarioTotals = getScenarioTotals();
+      const units = scenarioTotals.units || baselineUnits;
+      const months = scenarioTotals.months || baselineMonths;
       const scale = (units / baselineUnits) * (months / baselineMonths);
       const totalFte = totalFteBase * scale;
 
@@ -452,10 +358,18 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       elements.kpiLabor.textContent = formatNumber(totalLabor, 1);
       elements.kpiFte.textContent = formatNumber(totalFte, 2);
       elements.kpiRows.textContent = state.filteredData.length.toLocaleString();
+
+      elements.kpiAnnouncer.textContent = `KPIs updated. Avg cycle time ${formatNumber(
+        avgCycle,
+        1
+      )} seconds, total labor ${formatNumber(totalLabor, 1)} hours, total FTE ${formatNumber(
+        totalFte,
+        2
+      )}, rows ${state.filteredData.length}.`;
     };
 
-    const groupBy = (data, key) => {
-      return data.reduce((acc, row) => {
+    const groupBy = (data, key) =>
+      data.reduce((acc, row) => {
         const group = row[key];
         if (!acc[group]) {
           acc[group] = [];
@@ -463,9 +377,8 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
         acc[group].push(row);
         return acc;
       }, {});
-    };
 
-    const buildCharts = () => {
+    const renderCharts = () => {
       const cycleRows = state.filteredData.filter((row) => row.Unit === "Cycle Time");
       const laborRows = state.filteredData.filter((row) => row.Unit === "Labor Hours");
       const fteRows = state.filteredData.filter((row) => row.Unit === "FTE");
@@ -495,12 +408,11 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       );
 
       const timeGroups = groupBy(cycleRows, "TimeApplicable");
-      const timeLabels = Object.keys(timeGroups)
-        .sort((a, b) => {
-          const [yearA, quarterA] = a.split("-Q");
-          const [yearB, quarterB] = b.split("-Q");
-          return Number(yearA) - Number(yearB) || Number(quarterA) - Number(quarterB);
-        });
+      const timeLabels = Object.keys(timeGroups).sort((a, b) => {
+        const [yearA, quarterA] = a.split("-Q");
+        const [yearB, quarterB] = b.split("-Q");
+        return Number(yearA) - Number(yearB) || Number(quarterA) - Number(quarterB);
+      });
       const timeValues = timeLabels.map((label) =>
         calculateAverage(timeGroups[label].map((row) => row.Value))
       );
@@ -519,17 +431,17 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
               {
                 label: "Avg Cycle Time (sec)",
                 data: cycleAverages,
-                backgroundColor: palette.lightBlue
+                backgroundColor: palette.lightBlueFill,
+                borderColor: palette.darkBlue,
+                borderWidth: 1
               }
             ]
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-              title: {
-                display: true,
-                text: "Average Cycle Time per Machine Type"
-              }
+              legend: { display: false }
             },
             scales: {
               y: {
@@ -553,23 +465,22 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
               {
                 label: "Labor Hours",
                 data: laborTotals,
-                backgroundColor: palette.darkBlue
+                backgroundColor: palette.lightBlueFill,
+                borderColor: palette.darkBlue,
+                borderWidth: 1
               },
               {
                 label: "FTE",
                 data: fteTotals,
-                backgroundColor: palette.lightBlue
+                backgroundColor: palette.lightBlueFill,
+                borderColor: palette.darkBlue,
+                borderWidth: 1
               }
             ]
           },
           options: {
             responsive: true,
-            plugins: {
-              title: {
-                display: true,
-                text: "Labor Hours vs FTE per Machine Type"
-              }
-            },
+            maintainAspectRatio: false,
             scales: {
               y: {
                 title: {
@@ -593,7 +504,7 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
                 label: "Avg Cycle Time (sec)",
                 data: timeValues,
                 borderColor: palette.darkBlue,
-                backgroundColor: palette.lightBlue,
+                backgroundColor: palette.lightBlueFillSoft,
                 tension: 0.3,
                 fill: true
               }
@@ -601,11 +512,9 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-              title: {
-                display: true,
-                text: "Average Cycle Time over Time"
-              }
+              legend: { display: false }
             },
             scales: {
               y: {
@@ -620,7 +529,7 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       );
     };
 
-    const updateTable = () => {
+    const renderTable = () => {
       if (!state.filteredData.length) {
         if (state.dataTable) {
           state.dataTable.clear().draw();
@@ -635,13 +544,17 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       columns.forEach((column) => {
         const th = document.createElement("th");
         th.textContent = column;
+        th.className = "px-3 py-2";
         elements.tableHead.appendChild(th);
 
         const footTh = document.createElement("th");
         const input = document.createElement("input");
         input.type = "text";
         input.placeholder = `Search ${column}`;
+        input.className =
+          "w-full rounded-md border border-slate-200 px-2 py-1 text-xs text-slate-600 focus:border-[#76c7ff] focus:outline-none focus:ring-2 focus:ring-[#76c7ff]/40 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200";
         footTh.appendChild(input);
+        footTh.className = "px-3 py-2";
         elements.tableFoot.appendChild(footTh);
       });
 
@@ -654,8 +567,7 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
         columns: columns.map((column) => ({ data: column })),
         pageLength: 10,
         lengthMenu: [10, 25, 50, 100],
-        dom: "Bfrtip",
-        buttons: ["copy", "csv"],
+        dom: "frtip",
         responsive: true
       });
 
@@ -670,18 +582,10 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
     };
 
     const refreshDashboard = async () => {
-      await filterData();
-      updateKpis();
-      buildCharts();
-      updateTable();
-    };
-
-    const setDataset = async (data) => {
-      state.rawData = data.map(normalizeRow);
-      updateSelectOptions(elements.departmentFilter, uniqueValues(state.rawData, "Department"));
-      updateSelectOptions(elements.machineFilter, uniqueValues(state.rawData, "MachineType"));
-      updateSelectOptions(elements.datasetFilter, uniqueValues(state.rawData, "DatasetName"));
-      await refreshDashboard();
+      await applyFilters();
+      renderKPIs();
+      renderCharts();
+      renderTable();
     };
 
     const handleFileUpload = async (event) => {
@@ -692,7 +596,7 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       try {
         const text = await file.text();
         const parsed = await parseCsvAsync(text);
-        await setDataset(parsed);
+        await loadData(parsed);
       } catch (error) {
         alert("Unable to parse CSV file. Please check formatting.");
         console.error(error);
@@ -712,23 +616,119 @@ Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
       URL.revokeObjectURL(url);
     };
 
-    const initialize = async () => {
-      const parsed = await parseCsvAsync(dummyCsv);
-      await setDataset(parsed);
-
-      [
-        elements.departmentFilter,
-        elements.machineFilter,
-        elements.datasetFilter,
-        elements.criticalFilter,
-        elements.unitsInput,
-        elements.timeframeInput
-      ].forEach((element) => {
-        element.addEventListener("change", refreshDashboard);
+    let scenarioIndex = 0;
+    const updateRemoveButtons = () => {
+      const rows = Array.from(elements.scenarioRows.querySelectorAll(".scenario-row"));
+      rows.forEach((row, index) => {
+        const removeButton = row.querySelector(".remove-scenario-row");
+        if (!removeButton) {
+          return;
+        }
+        if (index === 0 && rows.length === 1) {
+          removeButton.classList.add("invisible");
+          removeButton.setAttribute("aria-hidden", "true");
+        } else {
+          removeButton.classList.remove("invisible");
+          removeButton.removeAttribute("aria-hidden");
+        }
       });
+    };
 
+    const createScenarioRow = ({ units = baselineUnits, months = baselineMonths } = {}) => {
+      scenarioIndex += 1;
+      const row = document.createElement("div");
+      row.className = "scenario-row grid gap-4 sm:grid-cols-[2fr_2fr_auto] items-end";
+
+      const unitsId = `unitsInput-${scenarioIndex}`;
+      const monthsId = `timeframeInput-${scenarioIndex}`;
+
+      row.innerHTML = `
+        <div>
+          <label for="${unitsId}" class="text-sm font-medium text-slate-700 dark:text-slate-200">Units to build</label>
+          <input
+            id="${unitsId}"
+            type="number"
+            min="1"
+            value="${units}"
+            class="scenario-units mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-[#76c7ff] focus:outline-none focus:ring-2 focus:ring-[#76c7ff]/50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+          />
+        </div>
+        <div>
+          <label for="${monthsId}" class="text-sm font-medium text-slate-700 dark:text-slate-200">Time frame (months)</label>
+          <input
+            id="${monthsId}"
+            type="number"
+            min="1"
+            value="${months}"
+            class="scenario-months mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm focus:border-[#76c7ff] focus:outline-none focus:ring-2 focus:ring-[#76c7ff]/50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+          />
+        </div>
+        <div class="flex items-center gap-2">
+          <button type="button" class="remove-scenario-row rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-500 transition hover:border-[#004a99] hover:text-[#004a99] dark:border-slate-600 dark:text-slate-300" aria-label="Remove this machine group">
+            Remove
+          </button>
+        </div>
+      `;
+
+      elements.scenarioRows.appendChild(row);
+      updateRemoveButtons();
+    };
+
+    const initializeScenarioRows = () => {
+      elements.scenarioRows.innerHTML = "";
+      scenarioIndex = 0;
+      createScenarioRow();
+    };
+
+    const initializeFilters = () => {
+      state.tomSelects.department = new TomSelect(elements.departmentFilter, {
+        plugins: ["remove_button"],
+        placeholder: "Select departments",
+        onChange: () => refreshDashboard()
+      });
+      state.tomSelects.machine = new TomSelect(elements.machineFilter, {
+        plugins: ["remove_button"],
+        placeholder: "Select machine types",
+        onChange: () => refreshDashboard()
+      });
+      state.tomSelects.dataset = new TomSelect(elements.datasetFilter, {
+        plugins: ["remove_button"],
+        placeholder: "Select datasets",
+        onChange: () => refreshDashboard()
+      });
+    };
+
+    const initialize = async () => {
+      initializeScenarioRows();
+      initializeFilters();
+
+      const parsed = await parseCsvAsync(dummyCsv);
+      await loadData(parsed);
+
+      elements.criticalFilter.addEventListener("change", refreshDashboard);
       elements.csvFile.addEventListener("change", handleFileUpload);
       elements.downloadCsv.addEventListener("click", downloadFilteredCsv);
+      elements.addScenarioRow.addEventListener("click", () => {
+        createScenarioRow();
+        refreshDashboard();
+      });
+
+      elements.scenarioRows.addEventListener("input", (event) => {
+        if (event.target.matches(".scenario-units, .scenario-months")) {
+          refreshDashboard();
+        }
+      });
+
+      elements.scenarioRows.addEventListener("click", (event) => {
+        if (!event.target.classList.contains("remove-scenario-row")) {
+          return;
+        }
+        event.target.closest(".scenario-row").remove();
+        updateRemoveButtons();
+        refreshDashboard();
+      });
+
+      lucide.createIcons();
     };
 
     initialize();

@@ -2,23 +2,736 @@
 <html lang="en">
 
 <head>
-  <meta name="description" content="Webpage description goes here" />
-  <meta charset="utf-8">
-  <title>Change_me</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="author" content="">
-  <link rel="stylesheet" href="css/style.css">
-  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-</head>
 
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Production analytics dashboard" />
+  <title>Production Analytics Dashboard</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css"
+  />
+  <style>
+    :root {
+      --light-blue: #76c7ff;
+      --dark-blue: #004a99;
+      --light-grey: #f0f2f5;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--light-grey);
+      color: #1a1a1a;
+    }
+
+    header {
+      background: var(--dark-blue);
+      color: var(--white);
+      padding: 24px;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      align-items: end;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    select,
+    input[type="number"],
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd0d6;
+      background: var(--white);
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-top: 8px;
+    }
+
+    .kpi {
+      border-left: 5px solid var(--light-blue);
+    }
+
+    .kpi h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: #4d4d4d;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .kpi p {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--dark-blue);
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 320px !important;
+    }
+
+    .table-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .btn {
+      border: none;
+      padding: 8px 14px;
+      background: var(--dark-blue);
+      color: var(--white);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: var(--light-blue);
+      color: #083457;
+    }
+
+    .footer-note {
+      font-size: 12px;
+      color: #6e7177;
+      margin-top: 8px;
+    }
+
+    table.dataTable tfoot th {
+      padding: 6px 8px;
+    }
+
+    table.dataTable tfoot input {
+      width: 100%;
+      padding: 4px 6px;
+      border: 1px solid #cbd0d6;
+      border-radius: 4px;
+    }
+  </style>
+</head>
 <body>
   
-<div class="container">
-  
-</div>
+  <header>
+    <div class="container">
+      <h1>Production Analytics Dashboard</h1>
+      <p>Explore cycle time, labor, and FTE data with quick filters and scenario inputs.</p>
+    </div>
+  </header>
 
-<script>
-</script>
+  <main class="container grid" aria-live="polite">
+    <section class="card">
+      <div class="grid grid-2">
+        <div>
+          <h2>Scenario Inputs</h2>
+          <div class="grid grid-2" style="margin-top: 12px;">
+            <div>
+              <label for="unitsInput">How many units to build?</label>
+              <input id="unitsInput" type="number" min="1" value="100" />
+            </div>
+            <div>
+              <label for="timeframeInput">Time frame (months)</label>
+              <input id="timeframeInput" type="number" min="1" value="12" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <h2>Upload CSV</h2>
+          <label for="csvFile">Replace dataset</label>
+          <input id="csvFile" type="file" accept=".csv" />
+          <p class="footer-note">Expected columns: Department, MachineType, WorkCenter, TimeApplicable, DatasetName, Unit, Value, CriticalPath.</p>
+        </div>
+      </div>
+    </section>
 
+    <section class="card">
+      <h2>Filters</h2>
+      <div class="filters" style="margin-top: 12px;">
+        <div>
+          <label for="departmentFilter">Department</label>
+          <select id="departmentFilter" multiple></select>
+        </div>
+        <div>
+          <label for="machineFilter">Machine Type</label>
+          <select id="machineFilter" multiple></select>
+        </div>
+        <div>
+          <label for="datasetFilter">Dataset Name</label>
+          <select id="datasetFilter" multiple></select>
+        </div>
+        <div class="checkbox-group">
+          <input id="criticalFilter" type="checkbox" />
+          <label for="criticalFilter">Only Critical Path</label>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-4">
+      <div class="card kpi">
+        <h3>Average cycle time (seconds)</h3>
+        <p id="kpiCycle">0</p>
+      </div>
+      <div class="card kpi">
+        <h3>Total labor hours</h3>
+        <p id="kpiLabor">0</p>
+      </div>
+      <div class="card kpi">
+        <h3>Computed total FTE</h3>
+        <p id="kpiFte">0</p>
+      </div>
+      <div class="card kpi">
+        <h3>Row count</h3>
+        <p id="kpiRows">0</p>
+      </div>
+    </section>
+
+    <section class="chart-grid">
+      <div class="card">
+        <h2>Average cycle time per Machine Type</h2>
+        <canvas id="cycleByMachine"></canvas>
+      </div>
+      <div class="card">
+        <h2>Labor hours vs FTE per Machine Type</h2>
+        <canvas id="laborFteByMachine"></canvas>
+      </div>
+      <div class="card">
+        <h2>Average cycle time over Time Applicable</h2>
+        <canvas id="cycleOverTime"></canvas>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="table-actions">
+        <h2>Filtered Data</h2>
+        <div>
+          <button class="btn" id="downloadCsv">Download CSV</button>
+        </div>
+      </div>
+      <table id="dataTable" class="display" style="width:100%">
+        <thead>
+          <tr id="tableHead"></tr>
+        </thead>
+        <tfoot>
+          <tr id="tableFoot"></tr>
+        </tfoot>
+        <tbody></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script>
+    const palette = {
+      lightBlue: "#76c7ff",
+      darkBlue: "#004a99",
+      lightGrey: "#f0f2f5"
+    };
+
+    const baselineUnits = 100;
+    const baselineMonths = 12;
+
+    const dummyCsv = `Department,MachineType,WorkCenter,TimeApplicable,DatasetName,Unit,Value,CriticalPath,Notes,Shift
+Assembly,MT-100,WC-01,2023-Q4,Baseline 2024,Cycle Time,120,Yes,Primary line,Day
+Assembly,MT-100,WC-01,2023-Q4,Baseline 2024,Labor Hours,55,Yes,Primary line,Day
+Assembly,MT-100,WC-01,2023-Q4,Baseline 2024,FTE,3.2,Yes,Primary line,Day
+Assembly,MT-100,WC-01,2024-Q1,Baseline 2024,Cycle Time,115,Yes,Primary line,Day
+Assembly,MT-100,WC-01,2024-Q1,Baseline 2024,Labor Hours,52,Yes,Primary line,Day
+Paint,PT-200,WC-07,2023-Q4,Baseline 2024,Cycle Time,180,No,Paint booth,Night
+Paint,PT-200,WC-07,2023-Q4,Baseline 2024,Labor Hours,60,No,Paint booth,Night
+Paint,PT-200,WC-07,2023-Q4,Baseline 2024,FTE,2.6,No,Paint booth,Night
+Paint,PT-200,WC-07,2024-Q1,Stretch 2024,Cycle Time,170,No,Paint booth,Night
+Paint,PT-200,WC-07,2024-Q1,Stretch 2024,Labor Hours,58,No,Paint booth,Night
+Machining,MC-300,WC-05,2023-Q4,Baseline 2024,Cycle Time,210,Yes,CNC cell,Day
+Machining,MC-300,WC-05,2023-Q4,Baseline 2024,Labor Hours,70,Yes,CNC cell,Day
+Machining,MC-300,WC-05,2023-Q4,Baseline 2024,FTE,3.8,Yes,CNC cell,Day
+Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Cycle Time,205,Yes,CNC cell,Day
+Machining,MC-300,WC-05,2024-Q1,Stretch 2024,Labor Hours,68,Yes,CNC cell,Day`;
+
+    const state = {
+      rawData: [],
+      filteredData: [],
+      dataTable: null,
+      charts: {}
+    };
+
+    const elements = {
+      departmentFilter: document.getElementById("departmentFilter"),
+      machineFilter: document.getElementById("machineFilter"),
+      datasetFilter: document.getElementById("datasetFilter"),
+      criticalFilter: document.getElementById("criticalFilter"),
+      unitsInput: document.getElementById("unitsInput"),
+      timeframeInput: document.getElementById("timeframeInput"),
+      csvFile: document.getElementById("csvFile"),
+      kpiCycle: document.getElementById("kpiCycle"),
+      kpiLabor: document.getElementById("kpiLabor"),
+      kpiFte: document.getElementById("kpiFte"),
+      kpiRows: document.getElementById("kpiRows"),
+      downloadCsv: document.getElementById("downloadCsv"),
+      tableHead: document.getElementById("tableHead"),
+      tableFoot: document.getElementById("tableFoot")
+    };
+
+    const csvColumns = [
+      "Department",
+      "MachineType",
+      "WorkCenter",
+      "TimeApplicable",
+      "DatasetName",
+      "Unit",
+      "Value",
+      "CriticalPath",
+      "Notes",
+      "Shift"
+    ];
+
+    const parseCsvAsync = (csvText) => {
+      return new Promise((resolve, reject) => {
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          dynamicTyping: false,
+          worker: true,
+          complete: (results) => resolve(results.data),
+          error: (error) => reject(error)
+        });
+      });
+    };
+
+    const normalizeRow = (row) => ({
+      ...row,
+      Value: Number(row.Value) || 0,
+      CriticalPath: row.CriticalPath?.trim() || "No"
+    });
+
+    const uniqueValues = (data, key) => {
+      return Array.from(new Set(data.map((row) => row[key]).filter(Boolean))).sort();
+    };
+
+    const selectedValues = (selectElement) => {
+      return Array.from(selectElement.selectedOptions).map((option) => option.value);
+    };
+
+    const updateSelectOptions = (selectElement, values) => {
+      selectElement.innerHTML = "";
+      values.forEach((value) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        option.selected = true;
+        selectElement.appendChild(option);
+      });
+    };
+
+    const matchesFilter = (row, filterValues, key) => {
+      if (!filterValues.length) {
+        return true;
+      }
+      return filterValues.includes(row[key]);
+    };
+
+    const filterData = async () => {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      const selectedDepartments = selectedValues(elements.departmentFilter);
+      const selectedMachines = selectedValues(elements.machineFilter);
+      const selectedDatasets = selectedValues(elements.datasetFilter);
+      const onlyCritical = elements.criticalFilter.checked;
+
+      state.filteredData = state.rawData.filter((row) => {
+        const isCritical = !onlyCritical || row.CriticalPath === "Yes";
+        return (
+          isCritical &&
+          matchesFilter(row, selectedDepartments, "Department") &&
+          matchesFilter(row, selectedMachines, "MachineType") &&
+          matchesFilter(row, selectedDatasets, "DatasetName")
+        );
+      });
+    };
+
+    const calculateAverage = (values) => {
+      if (!values.length) {
+        return 0;
+      }
+      const sum = values.reduce((total, value) => total + value, 0);
+      return sum / values.length;
+    };
+
+    const formatNumber = (value, decimals = 1) => {
+      return Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    };
+
+    const updateKpis = () => {
+      const cycleRows = state.filteredData.filter((row) => row.Unit === "Cycle Time");
+      const laborRows = state.filteredData.filter((row) => row.Unit === "Labor Hours");
+      const fteRows = state.filteredData.filter((row) => row.Unit === "FTE");
+
+      const avgCycle = calculateAverage(cycleRows.map((row) => row.Value));
+      const totalLabor = laborRows.reduce((total, row) => total + row.Value, 0);
+      const totalFteBase = fteRows.reduce((total, row) => total + row.Value, 0);
+
+      const units = Number(elements.unitsInput.value) || baselineUnits;
+      const months = Number(elements.timeframeInput.value) || baselineMonths;
+      const scale = (units / baselineUnits) * (months / baselineMonths);
+      const totalFte = totalFteBase * scale;
+
+      elements.kpiCycle.textContent = formatNumber(avgCycle, 1);
+      elements.kpiLabor.textContent = formatNumber(totalLabor, 1);
+      elements.kpiFte.textContent = formatNumber(totalFte, 2);
+      elements.kpiRows.textContent = state.filteredData.length.toLocaleString();
+    };
+
+    const groupBy = (data, key) => {
+      return data.reduce((acc, row) => {
+        const group = row[key];
+        if (!acc[group]) {
+          acc[group] = [];
+        }
+        acc[group].push(row);
+        return acc;
+      }, {});
+    };
+
+    const buildCharts = () => {
+      const cycleRows = state.filteredData.filter((row) => row.Unit === "Cycle Time");
+      const laborRows = state.filteredData.filter((row) => row.Unit === "Labor Hours");
+      const fteRows = state.filteredData.filter((row) => row.Unit === "FTE");
+
+      const cycleByMachine = groupBy(cycleRows, "MachineType");
+      const laborByMachine = groupBy(laborRows, "MachineType");
+      const fteByMachine = groupBy(fteRows, "MachineType");
+
+      const machineTypes = Array.from(
+        new Set([
+          ...Object.keys(cycleByMachine),
+          ...Object.keys(laborByMachine),
+          ...Object.keys(fteByMachine)
+        ])
+      ).sort();
+
+      const cycleAverages = machineTypes.map((machine) =>
+        calculateAverage((cycleByMachine[machine] || []).map((row) => row.Value))
+      );
+
+      const laborTotals = machineTypes.map((machine) =>
+        (laborByMachine[machine] || []).reduce((total, row) => total + row.Value, 0)
+      );
+
+      const fteTotals = machineTypes.map((machine) =>
+        (fteByMachine[machine] || []).reduce((total, row) => total + row.Value, 0)
+      );
+
+      const timeGroups = groupBy(cycleRows, "TimeApplicable");
+      const timeLabels = Object.keys(timeGroups)
+        .sort((a, b) => {
+          const [yearA, quarterA] = a.split("-Q");
+          const [yearB, quarterB] = b.split("-Q");
+          return Number(yearA) - Number(yearB) || Number(quarterA) - Number(quarterB);
+        });
+      const timeValues = timeLabels.map((label) =>
+        calculateAverage(timeGroups[label].map((row) => row.Value))
+      );
+
+      if (state.charts.cycleByMachine) {
+        Object.values(state.charts).forEach((chart) => chart.destroy());
+      }
+
+      state.charts.cycleByMachine = new Chart(
+        document.getElementById("cycleByMachine"),
+        {
+          type: "bar",
+          data: {
+            labels: machineTypes,
+            datasets: [
+              {
+                label: "Avg Cycle Time (sec)",
+                data: cycleAverages,
+                backgroundColor: palette.lightBlue
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: "Average Cycle Time per Machine Type"
+              }
+            },
+            scales: {
+              y: {
+                title: {
+                  display: true,
+                  text: "Seconds"
+                }
+              }
+            }
+          }
+        }
+      );
+
+      state.charts.laborFteByMachine = new Chart(
+        document.getElementById("laborFteByMachine"),
+        {
+          type: "bar",
+          data: {
+            labels: machineTypes,
+            datasets: [
+              {
+                label: "Labor Hours",
+                data: laborTotals,
+                backgroundColor: palette.darkBlue
+              },
+              {
+                label: "FTE",
+                data: fteTotals,
+                backgroundColor: palette.lightBlue
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: "Labor Hours vs FTE per Machine Type"
+              }
+            },
+            scales: {
+              y: {
+                title: {
+                  display: true,
+                  text: "Totals"
+                }
+              }
+            }
+          }
+        }
+      );
+
+      state.charts.cycleOverTime = new Chart(
+        document.getElementById("cycleOverTime"),
+        {
+          type: "line",
+          data: {
+            labels: timeLabels,
+            datasets: [
+              {
+                label: "Avg Cycle Time (sec)",
+                data: timeValues,
+                borderColor: palette.darkBlue,
+                backgroundColor: palette.lightBlue,
+                tension: 0.3,
+                fill: true
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: "Average Cycle Time over Time"
+              }
+            },
+            scales: {
+              y: {
+                title: {
+                  display: true,
+                  text: "Seconds"
+                }
+              }
+            }
+          }
+        }
+      );
+    };
+
+    const updateTable = () => {
+      if (!state.filteredData.length) {
+        if (state.dataTable) {
+          state.dataTable.clear().draw();
+        }
+        return;
+      }
+
+      const columns = Object.keys(state.filteredData[0]);
+      elements.tableHead.innerHTML = "";
+      elements.tableFoot.innerHTML = "";
+
+      columns.forEach((column) => {
+        const th = document.createElement("th");
+        th.textContent = column;
+        elements.tableHead.appendChild(th);
+
+        const footTh = document.createElement("th");
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = `Search ${column}`;
+        footTh.appendChild(input);
+        elements.tableFoot.appendChild(footTh);
+      });
+
+      if (state.dataTable) {
+        state.dataTable.destroy();
+      }
+
+      state.dataTable = $("#dataTable").DataTable({
+        data: state.filteredData,
+        columns: columns.map((column) => ({ data: column })),
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        dom: "Bfrtip",
+        buttons: ["copy", "csv"],
+        responsive: true
+      });
+
+      state.dataTable.columns().every(function () {
+        const that = this;
+        $("input", this.footer()).on("keyup change", function () {
+          if (that.search() !== this.value) {
+            that.search(this.value).draw();
+          }
+        });
+      });
+    };
+
+    const refreshDashboard = async () => {
+      await filterData();
+      updateKpis();
+      buildCharts();
+      updateTable();
+    };
+
+    const setDataset = async (data) => {
+      state.rawData = data.map(normalizeRow);
+      updateSelectOptions(elements.departmentFilter, uniqueValues(state.rawData, "Department"));
+      updateSelectOptions(elements.machineFilter, uniqueValues(state.rawData, "MachineType"));
+      updateSelectOptions(elements.datasetFilter, uniqueValues(state.rawData, "DatasetName"));
+      await refreshDashboard();
+    };
+
+    const handleFileUpload = async (event) => {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      try {
+        const text = await file.text();
+        const parsed = await parseCsvAsync(text);
+        await setDataset(parsed);
+      } catch (error) {
+        alert("Unable to parse CSV file. Please check formatting.");
+        console.error(error);
+      }
+    };
+
+    const downloadFilteredCsv = () => {
+      const csv = Papa.unparse(state.filteredData);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "filtered-production-analytics.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+    const initialize = async () => {
+      const parsed = await parseCsvAsync(dummyCsv);
+      await setDataset(parsed);
+
+      [
+        elements.departmentFilter,
+        elements.machineFilter,
+        elements.datasetFilter,
+        elements.criticalFilter,
+        elements.unitsInput,
+        elements.timeframeInput
+      ].forEach((element) => {
+        element.addEventListener("change", refreshDashboard);
+      });
+
+      elements.csvFile.addEventListener("change", handleFileUpload);
+      elements.downloadCsv.addEventListener("click", downloadFilteredCsv);
+    };
+
+    initialize();
+  </script>
 </body>
 </html>
